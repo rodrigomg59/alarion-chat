@@ -7,6 +7,10 @@
 # Ignore bundler config.
 /.bundle
 
+# Local host-side bundle install (only needed for host git hooks like rubocop;
+# the actual app runs via Docker, see ALARION.md).
+/vendor/bundle_host
+
 # Ignore the default SQLite database.
 /db/*.sqlite3
 /db/*.sqlite3-journal
