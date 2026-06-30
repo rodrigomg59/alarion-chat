@@ -1,3 +1,9 @@
+# Alarion Chat
+
+Alarion Intelligent Customer Communication Platform — built on [Chatwoot](https://github.com/chatwoot/chatwoot).
+
+This repository tracks Chatwoot upstream releases via the `upstream` remote. See branch/upgrade strategy below.
+
 <img src="./.github/screenshots/header.png#gh-light-mode-only" width="100%" alt="Header light mode"/>
 <img src="./.github/screenshots/header-dark.png#gh-dark-mode-only" width="100%" alt="Header dark mode"/>
 
