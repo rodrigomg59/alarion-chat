@@ -1,0 +1,7 @@
+# Alarion Chat local-dev overrides on top of docker-compose.yaml (upstream Chatwoot).
+# Docker Compose merges this automatically — keep docker-compose.yaml untouched
+# so upstream merges stay low-conflict. See ALARION.md.
+services:
+  postgres:
+    environment:
+      - POSTGRES_PASSWORD=postgres

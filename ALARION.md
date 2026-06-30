@@ -64,6 +64,37 @@ there is a future merge conflict. The one acceptable exception is adding a
 single `prepend_mod_with('ClassName')`-style hook line to a class that doesn't
 have one yet, which is small and rarely conflicts.
 
+## Local development (Docker)
+
+Chatwoot already ships a working `docker-compose.yaml` (Rails, Sidekiq, Vite,
+Postgres/pgvector, Redis, Mailhog). We don't edit that file — Alarion-specific
+overrides go in `docker-compose.override.yaml`, which Docker Compose merges in
+automatically. Today that file only fixes one thing: newer `pgvector/pgvector`
+Postgres images refuse to boot with an empty `POSTGRES_PASSWORD` (the value
+shipped in upstream's `docker-compose.yaml`), so we set one for local dev.
+
+```bash
+cp .env.example .env
+# set SECRET_KEY_BASE (e.g. `ruby -rsecurerandom -e 'print SecureRandom.hex(64)'`)
+# set POSTGRES_PASSWORD=postgres to match docker-compose.override.yaml
+
+docker compose build base
+docker compose build rails vite
+docker compose up -d postgres redis mailhog
+docker compose run --rm rails bundle exec rails db:create db:schema:load db:seed
+docker compose up -d rails sidekiq vite
+```
+
+App at `http://localhost:3000`. Seeded login: `john@acme.inc` / `Password1!`
+(change/remove before this ever goes near production). Mailhog UI at
+`http://localhost:8025`.
+
+Note: enabling `custom/` (see above) makes `ChatwootApp.custom?` true, which
+makes Chatwoot's enterprise-injection code look up a top-level `Custom`
+module. `custom/lib/custom.rb` (`module Custom; end`) must always exist, the
+same way `enterprise/lib/enterprise.rb` does — without it, boot fails with
+`NoMethodError: undefined method 'const_defined?' for false`.
+
 ## Rules
 
 - Never edit code directly on the production VPS — all development happens locally.
