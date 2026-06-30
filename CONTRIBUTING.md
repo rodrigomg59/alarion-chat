@@ -1,3 +1,6 @@
+> **Alarion Chat developers:** see [ALARION.md](./ALARION.md) for repo setup, Git LFS, and
+> the upstream upgrade workflow specific to this fork.
+
 # Contributing to Chatwoot
 
 Thanks for taking the time to contribute! :tada::+1:
