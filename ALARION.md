@@ -43,6 +43,27 @@ git merge upgrade/vX.Y.Z
 git push origin main
 ```
 
+## Where Alarion-specific code goes
+
+Chatwoot already has a built-in extension mechanism for white-label products,
+the same one used for the `enterprise/` edition: `ChatwootApp.custom?` detects
+a `custom/` directory at the repo root, and `prepend_mod_with` / `include_mod_with`
+/ `extend_mod_with` calls already scattered through core classes pick up
+`Custom::X` modules automatically. We wired the matching autoload/view paths
+into `config/application.rb` (mirroring the existing `enterprise/` block) and
+documented the convention in [custom/README.md](./custom/README.md).
+
+Rule of thumb:
+
+- **New backend feature or behavior override** → `custom/app/...`, `Custom::` namespace. See `custom/README.md`.
+- **Branding** (name, logo, colors, terms/privacy URLs) → `config/installation_config.yml` values, set via env vars or Super Admin UI. No code change, no merge risk.
+- **Frontend customization** → no overlay mechanism exists upstream for this (EE frontend features are gated via API flags, not a directory split). Until we need more, keep frontend branding to CSS variables / the installation_config-driven logo & name, and revisit a proper isolation pattern if/when real custom UI is needed.
+
+Avoid editing core Chatwoot files for behavior changes — every line changed
+there is a future merge conflict. The one acceptable exception is adding a
+single `prepend_mod_with('ClassName')`-style hook line to a class that doesn't
+have one yet, which is small and rarely conflicts.
+
 ## Rules
 
 - Never edit code directly on the production VPS — all development happens locally.
