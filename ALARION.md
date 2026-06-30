@@ -95,6 +95,31 @@ module. `custom/lib/custom.rb` (`module Custom; end`) must always exist, the
 same way `enterprise/lib/enterprise.rb` does — without it, boot fails with
 `NoMethodError: undefined method 'const_defined?' for false`.
 
+## Host-side git hooks (rubocop, eslint)
+
+`.husky/pre-commit` runs `eslint`/`lint-staged` on staged JS/Vue files and
+`rubocop` on staged `.rb` files, **on the host**, not inside Docker. This
+needs a host-side JS and Ruby toolchain even though the app itself runs in
+containers:
+
+```bash
+# JS (Node 24.x / pnpm 10.x, pinned in package.json "engines")
+brew install fnm
+fnm install 24 && fnm use 24
+corepack prepare pnpm@10.2.0 --activate
+pnpm install
+
+# Ruby (3.4.4, pinned in .ruby-version / Gemfile)
+brew install rbenv ruby-build libpq
+rbenv install 3.4.4   # picked up automatically via .ruby-version
+gem install bundler -v 2.5.16
+bundle config set --local build.pg --with-pg-config=/opt/homebrew/opt/libpq/bin/pg_config
+bundle install        # installs into ./vendor/bundle_host, gitignored
+```
+
+Without this, `rubocop` silently fails inside the pre-commit hook (it's
+wrapped in `|| true`) and Ruby changes never actually get linted before commit.
+
 ## Rules
 
 - Never edit code directly on the production VPS — all development happens locally.
